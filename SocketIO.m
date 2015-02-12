@@ -23,7 +23,7 @@
 #import "SocketIOJSONSerialization.h"
 
 #ifdef DEBUG
-#define DEBUG_LOGS 1
+#define DEBUG_LOGS 0
 #define DEBUG_CERTIFICATE 1
 #else
 #define DEBUG_LOGS 0
@@ -135,7 +135,7 @@ NSString* const SocketIOException = @"SocketIOException";
         
         // do handshake via HTTP request
         NSString *protocol = _useSecure ? @"https" : @"http";
-        NSString *port = _port ? [NSString stringWithFormat:@":%d", _port] : @"";
+        NSString *port = _port ? [NSString stringWithFormat:@":%ld", (long)_port] : @"";
         NSTimeInterval time = [[NSDate date] timeIntervalSince1970] * 1000;
         NSString *handshakeUrl = [NSString stringWithFormat:kHandshakeURL, protocol, _host, port, kResourceName,kTransportPolling, time, query];
         //@"%@://%@%@/%@/1/?t=%.0f%@";
@@ -185,7 +185,7 @@ NSString* const SocketIOException = @"SocketIOException";
 - (void) disconnectForced
 {
     NSString *protocol = [self useSecure] ? @"https" : @"http";
-    NSString *port = _port ? [NSString stringWithFormat:@":%d", _port] : @"";
+    NSString *port = _port ? [NSString stringWithFormat:@":%ld", (long)_port] : @"";
     NSString *urlString = [NSString stringWithFormat:kForceDisconnectURL, protocol, _host, port, kResourceName, _sid];
     NSURL *url = [NSURL URLWithString:urlString];
     DEBUGLOG(@"Force disconnect at: %@", urlString);
@@ -666,7 +666,7 @@ NSString* const SocketIOException = @"SocketIOException";
             
             NSUInteger ack = 0;
             
-            SocketIOPacket *packet = [[SocketIOPacketV10x alloc] initWithTypeIndex:control];            
+            SocketIOPacket *packet = [[SocketIOPacketV10x alloc] initWithTypeIndex:(int)control];
             
             //dont care about the endpoint here
             packet.endpoint = @"";
@@ -759,7 +759,7 @@ NSString* const SocketIOException = @"SocketIOException";
                         {
                             
                             if (ack > 0) {
-                                int ackId = ack;
+                                int ackId = (int)ack;
                                 DEBUGLOG(@"ack id found: %d", ackId);
                                 
                                 NSString *argsStr = [packet.data substringFromIndex:1 ];
